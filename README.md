@@ -203,26 +203,105 @@ The previous example could be rewritten:
 
 ## 2.8.0-**Expressions**
 
-```csharp
-// TODO
+MSBuild allows for various expressions to be used as values:
+
+* property expression: `$(Expression)`
+* item expression: `@(Expression)`
+* metadata expression: `%(Expressions)`
+
+### 2.8.1-**Property-expressions**
+
+Most commonly the property expressions are used to read value of some property:
+
+```xml
+<PropertyGroup>
+  <DeployFolder>deploy\</DeployFolder>
+  <DeployZipPath>$(DeployFolder)deploy.zip</DeployZipPath>
+</PropertyGroup>
 ```
-```batch
-REM TODO
+
+Since properties are just strings some methods can be used on them in the expressions:
+
+```xml
+<PropertyGroup>
+  <OutputPath>bin\$(Configuration.Substring(0,3))\</OutputPath>
+</PropertyGroup>
 ```
-```sql
--- TODO
+
+It's also possible to access some static members:
+
+`$([Namespace.To.Class]::StaticProperty)`
+
+`$([Namespace.To.Class]::StaticMethod(parameters))`
+
+```xml
+<ItemGroup Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(TargetFramework), 'net(45|451)'))">
+  <Reference Include="Microsoft.Build.Framework" />
+</ItemGroup>
 ```
-```ruby
-# TODO
+
+For more info about what is allowed see:
+<https://msdn.microsoft.com/en-us/library/dd633440.aspx>
+
+### 2.8.2-**Item-expressions**
+
+Use item expressions to... use the item lists as input for other items/targets/tasks:
+
+```xml
+<ItemGroup>
+  <Compile Include="**\*.cs" />
+  <Page Include="**\*.xaml" />
+  <StuffToShowInTheEditor Include="@(Compile);@(Page)" />
+</ItemGroup>
+```
+
+The item expression syntax can be used to map the item list to some other transformed
+list or even to a scalar value:
+
+`@(Compile->Count())` - amount of the `Compile` items
+
+`@(Compile->Distinct())` - filters the items and selects only the ones that do not repeat
+
+To find out more about what's possible see:
+<https://msdn.microsoft.com/en-us/library/ee886422.aspx>
+
+### 2.8.3-**Metadata-expressions**
+
+Metadata expressions are used (as the name implies) to access metadata.
+
+```xml
+<ItemGroup>
+  <Reference Include="Newtonsoft.Json">
+    <Version>9.0.1</Version>
+  </Reference>
+</ItemGroup>
+<Target Name="Build">
+  <Message Text="For referece '%(Reference.Identity)' version '%(Version)' is used." />
+</Target>
+```
+
+> **HINT:** usage of metadata experssions in targets or tasks triggers batching.
+
+Metadata expressions are commonly used inside item transform expressions:
+
+```xml
+<ItemGroup>
+  <Page Include="**\*.xaml" />
+  <Compile Include="@(Page -> '%(RelativeDir)%(Filename).cs')">
+    <DependentUpon>%(Filename).xaml</DependentUpon>
+  </Compile>
+</ItemGroup>
 ```
 
 # 3.0.0-**ADVANCED-TOPICS**
 
-* batching
+* batching: <https://msdn.microsoft.com/en-us/library/ms171473.aspx>
 * custom tasks
-  * code in XML
-  * precompiled tasks
-* visual studio integration
+  * compiled tasks: <https://msdn.microsoft.com/en-us/library/t9883dzc.aspx>
+  * inline tasks: <https://msdn.microsoft.com/en-us/library/dd722601.aspx>
+* visual studio integration: <https://msdn.microsoft.com/en-us/library/ms171468.aspx>
+* evaluation and execution order: <https://msdn.microsoft.com/en-us/library/dd997067.aspx#Anchor_2>
+* multitargeting <https://msdn.microsoft.com/en-us/library/hh264223.aspx>
 
 # 4.0.0-**THE-END**
 
