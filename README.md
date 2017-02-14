@@ -57,7 +57,7 @@ Properties defined in default .NET targets:
 
 ## 2.3.0-**Items**
 
-Can be added in `Project` but have in a `ItemGroup`:
+Can be added in `Project` but have to be in an `ItemGroup`:
 ```xml
 <ItemGroup>
   <Compile Include="**/*.cs" Exclude="obj/**/*.cs" />
@@ -66,7 +66,7 @@ Can be added in `Project` but have in a `ItemGroup`:
 
 Name of the node defines the type of the item (`Compile`, `Reference`, `EmbeddedResource` etc.).
 
-Use `Include` attribute to define the elements that will be a part of the list (supports glob patterns).
+Use `Include` attribute to define the elements that will be a part of the list (supports basic glob patterns).
 
 Use `Exclude` attribute to **not** include some elements that would normally be according to the `Include` attribute.
 
@@ -139,7 +139,7 @@ Tasks can take items and values as inpus as well as output them:
   <Output
     TaskParameter="Output2"
     ItemName="OutputItem" />
-</SomeTaskWithOutput>
+</SomeTaskWithOutputs>
 ```
 
 List of tasks included with MSBuild:
@@ -169,7 +169,7 @@ Almost every XML node can have a `Condtition` attribute, which signifies wheter 
 ```
 
 With conditions you can make the project more flexible by adjusting the behaviour to the state of the project or introduce build variants.
-One such example is differentianig between Debug and Release build, other might be performing optional deployment based on a property flag.
+One such example is differentiating between Debug and Release build, other might be performing optional deployment based on a property flag.
 
 For more info about conditions' sytax see:
 <https://msdn.microsoft.com/en-us/library/7szfhaft.aspx>
